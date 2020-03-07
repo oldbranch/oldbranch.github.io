@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<!--
+	Read Only by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>POJ2251《Dungeon-Master》</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="../assets/css/main.css" />
+        <link rel="stylesheet" href="../assets/css/code.css" />
+        <script src="../assets/js/shCore.js"></script>
+		<script src="../assets/js/shBrushCpp.js"></script>
+		<script src="../assets/js/shBrushXml.js"></script>
+	</head>
+	<body class="is-preload">
+		<!-- Header -->
+		<section id="header">
+			<header>
+				<span class="image avatar"><img src="../images/avatar.jpg" alt="" /></span>
+				<h1 id="logo"><a href="../index.html">oldbranch</a></h1>
+				<!-- <p>I got reprogrammed by a rogue AI<br />
+				and now I'm totally cray</p> -->
+			</header>
+			<nav id="nav">
+				<ul>
+					<li><a href="#one" class="active">题目介绍</a></li>
+					<li><a href="#two">代码</a></li>
+					<!-- <li><a href="#three">A Few Accomplishments</a></li>
+					<li><a href="#four">Contact</a></li> -->
+				</ul>
+			</nav>
+			<footer>
+				<ul class="icons">
+					<li><a href="#" class="icon brands fa-weibo"><span class="label">weibo</span></a></li>
+					<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+					<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+					<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+					<li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+			</footer>
+		</section>
+		<!-- Wrapper -->
+		<div id="wrapper">
+			<!-- Main -->
+			<div id="main">
+				<!-- head -->
+				<section>
+					<!-- <div class="image main" data-position="center">
+						<img src="../images/banner.jpg" alt="" />
+					</div> -->
+					<div class="container">
+						<header class="major">
+							<h2>POJ2251 Dungeon-Master</h2>
+						</header>
+					</div>
+                </section>
+                <!-- One -->
+                <section id="one">
+					<div class="container">
+						<p>
+                            这个是一个三维的迷宫，意思是沿着上下左右前后的方向可以每次移动一步，在遇到'.'时
+                            才能够移动，遇到边或者'#'时不能够移动，问从起点出发到终点要多少步。
+                        </p>
+					</div>
+				</section>
+				<!-- Two -->
+				<section id="two">
+					<div class="container">
+						<textarea name="code" id="code" class="c++">
+                            #include <iostream>
+                            #include <cstdio>
+                            #include <cstring>
+                            #include <queue>
+                            using namespace std;
+                            char trap[35][35][35];
+                            int a[35][35][35];
+                            int dir[6][3] = {{-1,0,0},{0,-1,0},{0,0,-1},{1,0,0},{0,1,0},{0,0,1}};
+                            struct node {
+                                int i,j,k;
+                            };
+                            node start,aim;
+                            void input(int L,int R,int C)
+                            {
+                                for (int i = 0;i < L;i++) {
+                                    for (int j = 0;j < R;j++) {
+                                        for (int k = 0;k < C;k++){
+                                            cin >> trap[i][j][k];
+                                            if (trap[i][j][k] == 'S')
+                                            {
+                                                start.i = i;
+                                                start.j = j;
+                                                start.k = k;
+                                            }
+                                            else if (trap[i][j][k] == 'E')
+                                            {
+                                                aim.i = i;
+                                                aim.j = j;
+                                                aim.k = k;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            void show(int L,int R)
+                            {
+                                for (int i = 0;i < L;i++)
+                                {
+                                    for (int j = 0;j < R;j++)
+                                    {
+                                        cout << trap[i][j] << endl;
+                                    }
+                                    cout << endl;
+                                }
+                            }
+                            int bfs(int L,int R,int C)
+                            {
+                                queue<node> que;
+                                que.push(start);
+                                while(!que.empty()){
+                                    node tmp = que.front();
+                                    que.pop();
+                                    node next;
+                                    for (int i = 0;i < 6;i++) {
+                                        next.i = tmp.i + dir[i][0];
+                                        next.j = tmp.j + dir[i][1];
+                                        next.k = tmp.k + dir[i][2];
+                                        //cout << next.i << " " << next.j << " " << next.k << endl;
+                                        if (next.i < 0 || next.i >= L) continue;
+                                        if (next.j < 0 || next.j >= R) continue;
+                                        if (next.k < 0 || next.k >= C) continue;
+                                        if (trap[next.i][next.j][next.k] == '#') continue;
+                                        else if (a[next.i][next.j][next.k] == 0) {
+                                            a[next.i][next.j][next.k] = a[tmp.i][tmp.j][tmp.k] + 1;
+                                            if (trap[next.i][next.j][next.k] == 'E') {
+                                                return a[next.i][next.j][next.k];
+                                            }
+                                            que.push(next);
+                                        }
+                                    }
+                                }
+                                return -1;
+                            }
+                            
+                            int main()
+                            {
+                                int L,R,C;
+                                while(scanf("%d%d%d",&L,&R,&C) && L+R+C != 0) {
+                                    memset(trap,0,sizeof(trap));
+                                    memset(a,0,sizeof(a));
+                                    input(L,R,C);
+                                //show(L,R);
+                                    int ans = bfs(L,R,C);
+                                    if(ans != -1) printf("Escaped in %d minute(s).\n",ans);
+                                    else printf("Trapped!\n");
+                                }
+                                return 0;
+                            }                                
+                        </textarea>
+                        <script language="javascript">
+                                dp.SyntaxHighlighter.HighlightAll('code', true,false);
+                                document.body.removeChild(document.getElementById("code"));
+                        </script>
+					</div>
+				</section>
+			</div>
+			<!-- Footer -->
+			<section id="footer">
+				<div class="container">
+					<ul class="copyright">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</section>
+		</div>
+		<!-- Scripts -->
+		<script src="../assets/js/jquery.min.js"></script>
+		<script src="../assets/js/jquery.scrollex.min.js"></script>
+		<script src="../assets/js/jquery.scrolly.min.js"></script>
+		<script src="../assets/js/browser.min.js"></script>
+		<script src="../assets/js/breakpoints.min.js"></script>
+		<script src="../assets/js/util.js"></script>
+        <script src="../assets/js/main.js"></script>
+        
+	</body>
+</html>
